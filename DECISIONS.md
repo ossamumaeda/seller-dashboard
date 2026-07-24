@@ -44,3 +44,36 @@ Foi criada uma camada de API responsável exclusivamente pela comunicação HTTP
 ### Trade-off
 
 Em aplicações muito pequenas seria possível chamar o Axios diretamente no hook. A separação foi adotada por melhorar a organização com baixo custo de complexidade.
+
+## DECISION-004 — Separação entre API, Hook e Página
+
+A comunicação com o backend foi dividida em três camadas:
+
+- API → responsável apenas pelas chamadas HTTP.
+- Hook → responsável pelo cache e gerenciamento de estado com React Query.
+- Página → responsável apenas pela renderização.
+
+### Motivações
+
+- Reduz acoplamento.
+- Facilita testes.
+- Facilita reutilização.
+- Mantém cada camada com uma responsabilidade única.
+
+### Trade-off
+
+Para aplicações muito pequenas seria possível utilizar o Axios diretamente na página. A separação foi adotada por melhorar a organização sem aumentar significativamente a complexidade.
+
+## DECISION-005 — Proxy de desenvolvimento para API
+
+Foi utilizado o proxy nativo do Vite para comunicação entre frontend e backend durante desenvolvimento.
+
+### Motivações
+
+- Evita configuração de CORS apenas para ambiente local.
+- Mantém o backend independente.
+- Simula melhor um ambiente onde frontend e backend estão atrás do mesmo gateway.
+
+### Trade-off
+
+Em produção a estratégia depende da infraestrutura de deploy. Caso frontend e backend estejam em domínios diferentes, o CORS deverá ser configurado no backend ou em um gateway.

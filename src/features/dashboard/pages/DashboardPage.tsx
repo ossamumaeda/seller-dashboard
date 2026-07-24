@@ -1,12 +1,34 @@
-import { Box, Typography } from "@mui/material";
+import {
+  Alert,
+  CircularProgress,
+  Typography
+} from "@mui/material";
+
+import { useDashboard } from "../hooks/useDashboard";
 
 export function DashboardPage() {
+
+  const { data, isLoading, error } = useDashboard();
+
+  if (isLoading)
+    return <CircularProgress />;
+
+  if (error)
+    return (
+      <Alert severity="error">
+        Erro ao carregar dashboard.
+      </Alert>
+    );
+
   return (
-    <Box p={4}>
-      <Typography variant="h4" component="h1">
+    <>
+      <Typography variant="h4">
         Dashboard
       </Typography>
-    </Box>
+
+      <pre>
+        {JSON.stringify(data, null, 2)}
+      </pre>
+    </>
   );
 }
-
