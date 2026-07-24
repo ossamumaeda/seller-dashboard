@@ -18,7 +18,15 @@ export function DashboardPage() {
   } = useDashboard();
 
   if (isLoading) {
-    return <CircularProgress />;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        mt={10}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (error) {
@@ -33,8 +41,8 @@ export function DashboardPage() {
 
   if (!competence) {
     return (
-      <Alert severity="warning">
-        Nenhuma competência encontrada.
+      <Alert severity="info">
+        Nenhuma competência disponível para visualização.
       </Alert>
     );
   }

@@ -107,3 +107,22 @@ O componente HealthChip foi separado pois representa uma regra visual reutilizá
 ### Trade-off
 
 Uma tabela genérica poderia ser criada em aplicações maiores com muitos grids. Para este projeto isso aumentaria complexidade sem benefício real.
+
+## DECISION-008 — Feedback visual e estados da aplicação
+
+Foram adicionados estados visuais para:
+
+- carregamento;
+- erro;
+- ausência de dados;
+- situação crítica.
+
+### Motivações
+
+Uma aplicação administrativa precisa comunicar claramente o estado atual do sistema.
+
+Além disso, o alerta de vendedores críticos atende ao requisito AC-06, evitando que o usuário precise analisar toda a tabela para identificar problemas.
+
+### Trade-off
+
+Poderíamos adicionar componentes mais elaborados como skeletons, gráficos e animações. Porém, para um take-home, feedbacks simples possuem melhor relação custo/benefício.
