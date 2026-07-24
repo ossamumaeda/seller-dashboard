@@ -29,3 +29,18 @@ Os providers globais (ThemeProvider e QueryClientProvider) foram centralizados n
 ### Trade-off
 
 Para uma aplicação pequena seria possível configurar tudo diretamente em `main.tsx`. A extração para um provider dedicado foi adotada por melhorar a organização sem adicionar complexidade significativa.
+
+## DECISION-003 — Separação entre Hook e API
+
+Foi criada uma camada de API responsável exclusivamente pela comunicação HTTP.
+
+### Motivações
+
+- O hook (`useDashboard`) conhece apenas React Query.
+- A camada de API conhece apenas Axios.
+- Facilita testes unitários.
+- Reduz acoplamento entre React Query e infraestrutura HTTP.
+
+### Trade-off
+
+Em aplicações muito pequenas seria possível chamar o Axios diretamente no hook. A separação foi adotada por melhorar a organização com baixo custo de complexidade.

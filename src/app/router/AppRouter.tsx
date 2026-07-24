@@ -1,8 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-function DashboardPage() {
-  return <h1>Dashboard</h1>;
-}
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { DashboardPage } from "@/features/dashboard/pages/DashboardPage";
 
 export function AppRouter() {
   return (
