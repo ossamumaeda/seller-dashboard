@@ -91,3 +91,19 @@ O resumo consolidado foi isolado em um componente próprio.
 ### Trade-off
 
 Para um dashboard extremamente pequeno seria possível manter os cards diretamente na página. A separação foi adotada por melhorar organização sem adicionar complexidade relevante.
+
+## DECISION-007 — Componentização da tabela de vendedores
+
+A tabela de vendedores foi mantida dentro da feature dashboard.
+
+### Motivações
+
+- Possui regras visuais específicas do domínio.
+- Evita criar componentes genéricos prematuramente.
+- Mantém a feature autocontida.
+
+O componente HealthChip foi separado pois representa uma regra visual reutilizável.
+
+### Trade-off
+
+Uma tabela genérica poderia ser criada em aplicações maiores com muitos grids. Para este projeto isso aumentaria complexidade sem benefício real.

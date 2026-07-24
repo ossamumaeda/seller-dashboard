@@ -1,5 +1,6 @@
 import {
   Alert,
+  Box,
   CircularProgress,
   Container,
   Typography,
@@ -7,6 +8,7 @@ import {
 
 import { useDashboard } from "../hooks/useDashboard";
 import { DashboardSummary } from "../components/DashboardSummary";
+import { SellersTable } from "../components/SellersTable";
 
 export function DashboardPage() {
   const {
@@ -50,6 +52,12 @@ export function DashboardPage() {
       <DashboardSummary
         competence={competence}
       />
+
+      <Box sx={{ mt: 4 }}>
+        <SellersTable
+          sellers={competence.sellers}
+        />
+      </Box>
     </Container>
   );
 }
