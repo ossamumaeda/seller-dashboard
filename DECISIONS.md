@@ -77,3 +77,17 @@ Foi utilizado o proxy nativo do Vite para comunicação entre frontend e backend
 ### Trade-off
 
 Em produção a estratégia depende da infraestrutura de deploy. Caso frontend e backend estejam em domínios diferentes, o CORS deverá ser configurado no backend ou em um gateway.
+
+## DECISION-006 — Componentização do resumo do dashboard
+
+O resumo consolidado foi isolado em um componente próprio.
+
+### Motivações
+
+- Mantém a página responsável apenas pela composição.
+- Facilita evolução da interface.
+- Permite reutilização dos indicadores em outros contextos.
+
+### Trade-off
+
+Para um dashboard extremamente pequeno seria possível manter os cards diretamente na página. A separação foi adotada por melhorar organização sem adicionar complexidade relevante.
