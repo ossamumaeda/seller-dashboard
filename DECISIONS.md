@@ -1,128 +1,229 @@
-# DECISION-001
+# Frontend Architecture Decisions
 
-## Organização por Feature
+## Contexto
+
+Frontend desenvolvido como parte de um take-home utilizando React, TypeScript, Vite, Material UI, React Query e React Router.
+
+O objetivo foi criar uma SPA para acompanhamento da verba promocional dos vendedores, consumindo uma API backend existente.
+
+As decisões abaixo priorizam simplicidade, manutenção e clareza, evitando complexidade desnecessária dentro do timebox do desafio.
+
+---
+
+# DECISION-001 — Organização por Feature
+
+## Decisão
 
 Foi adotada uma organização Feature First.
 
-Motivos:
+Estrutura:
 
-- Mantém componentes relacionados próximos.
-- Facilita manutenção.
-- Escala melhor que organização por tipo.
-- É simples de explicar durante uma entrevista.
+```
+features/
+└── dashboard/
+    ├── api/
+    ├── dto/
+    ├── hooks/
+    ├── components/
+    └── pages/
+```
 
-Trade-off:
+## Motivação
 
-Para aplicações muito pequenas, uma estrutura por tipo pode parecer mais simples. Entretanto, como a tendência é crescer, a organização por feature reduz acoplamento e melhora a navegabilidade do projeto.
+- Mantém código relacionado ao mesmo domínio próximo.
+- Facilita manutenção e navegação.
+- Escala melhor que uma organização apenas por tipo.
 
-## DECISION-002 — Providers centralizados
+## Trade-off
 
-Os providers globais (ThemeProvider e QueryClientProvider) foram centralizados na inicialização da aplicação.
+Para aplicações muito pequenas, uma estrutura por tipo pode parecer mais simples. Porém, conforme cresce, tende a espalhar uma mesma funcionalidade em vários locais.
 
-### Motivações
+---
 
-- Evita repetição em diferentes páginas.
-- Mantém um único QueryClient para toda a aplicação.
-- Facilita adicionar novos providers futuramente (Auth, Snackbar, Localization etc.).
-- Separa a infraestrutura da lógica de negócio.
+# DECISION-002 — React Query para estado remoto
 
-### Trade-off
+## Decisão
 
-Para uma aplicação pequena seria possível configurar tudo diretamente em `main.tsx`. A extração para um provider dedicado foi adotada por melhorar a organização sem adicionar complexidade significativa.
+Foi utilizado React Query para gerenciamento dos dados vindos da API.
 
-## DECISION-003 — Separação entre Hook e API
+## Motivação
 
-Foi criada uma camada de API responsável exclusivamente pela comunicação HTTP.
+A maior parte do estado da aplicação é remoto.
 
-### Motivações
+React Query fornece:
 
-- O hook (`useDashboard`) conhece apenas React Query.
-- A camada de API conhece apenas Axios.
-- Facilita testes unitários.
-- Reduz acoplamento entre React Query e infraestrutura HTTP.
+- cache;
+- loading;
+- tratamento de erros;
+- sincronização dos dados.
 
-### Trade-off
+## Trade-off
 
-Em aplicações muito pequenas seria possível chamar o Axios diretamente no hook. A separação foi adotada por melhorar a organização com baixo custo de complexidade.
+Redux ou Zustand poderiam ser utilizados, mas adicionariam complexidade sem existir uma necessidade real de estado global neste projeto.
 
-## DECISION-004 — Separação entre API, Hook e Página
+---
 
-A comunicação com o backend foi dividida em três camadas:
+# DECISION-003 — Separação entre API, Hooks e Componentes
 
-- API → responsável apenas pelas chamadas HTTP.
-- Hook → responsável pelo cache e gerenciamento de estado com React Query.
-- Página → responsável apenas pela renderização.
+## Decisão
 
-### Motivações
+A comunicação foi dividida em camadas:
 
-- Reduz acoplamento.
-- Facilita testes.
-- Facilita reutilização.
-- Mantém cada camada com uma responsabilidade única.
+```
+Component
+    ↓
+React Query Hook
+    ↓
+API Service
+    ↓
+Axios
+```
 
-### Trade-off
+## Motivação
 
-Para aplicações muito pequenas seria possível utilizar o Axios diretamente na página. A separação foi adotada por melhorar a organização sem aumentar significativamente a complexidade.
+Cada camada possui uma responsabilidade:
 
-## DECISION-005 — Proxy de desenvolvimento para API
+- API Service: comunicação HTTP.
+- Hook: gerenciamento de dados e cache.
+- Componentes: apenas renderização.
 
-Foi utilizado o proxy nativo do Vite para comunicação entre frontend e backend durante desenvolvimento.
+Isso reduz acoplamento e facilita testes.
 
-### Motivações
+## Trade-off
 
-- Evita configuração de CORS apenas para ambiente local.
-- Mantém o backend independente.
-- Simula melhor um ambiente onde frontend e backend estão atrás do mesmo gateway.
+Para uma aplicação pequena seria possível chamar Axios diretamente na página, porém a separação adiciona pouca complexidade e melhora a organização.
 
-### Trade-off
+---
 
-Em produção a estratégia depende da infraestrutura de deploy. Caso frontend e backend estejam em domínios diferentes, o CORS deverá ser configurado no backend ou em um gateway.
+# DECISION-004 — DTOs tipados
 
-## DECISION-006 — Componentização do resumo do dashboard
+## Decisão
 
-O resumo consolidado foi isolado em um componente próprio.
+As respostas da API foram representadas através de interfaces TypeScript.
 
-### Motivações
+## Motivação
 
-- Mantém a página responsável apenas pela composição.
-- Facilita evolução da interface.
-- Permite reutilização dos indicadores em outros contextos.
+- Evita uso de `any`.
+- Mantém contrato explícito com backend.
+- Melhora segurança durante alterações.
 
-### Trade-off
+## Trade-off
 
-Para um dashboard extremamente pequeno seria possível manter os cards diretamente na página. A separação foi adotada por melhorar organização sem adicionar complexidade relevante.
+Para protótipos simples seria possível utilizar objetos inferidos diretamente, porém contratos explícitos são mais adequados em aplicações corporativas.
 
-## DECISION-007 — Componentização da tabela de vendedores
+---
 
-A tabela de vendedores foi mantida dentro da feature dashboard.
+# DECISION-005 — Componentização orientada ao domínio
 
-### Motivações
+## Decisão
 
-- Possui regras visuais específicas do domínio.
-- Evita criar componentes genéricos prematuramente.
-- Mantém a feature autocontida.
+Foram criados componentes específicos:
 
-O componente HealthChip foi separado pois representa uma regra visual reutilizável.
+- DashboardSummary;
+- SellersTable;
+- HealthChip.
 
-### Trade-off
+## Motivação
 
-Uma tabela genérica poderia ser criada em aplicações maiores com muitos grids. Para este projeto isso aumentaria complexidade sem benefício real.
+Os componentes representam conceitos reais do domínio.
 
-## DECISION-008 — Feedback visual e estados da aplicação
+O `HealthChip`, por exemplo, encapsula a representação visual dos estados:
 
-Foram adicionados estados visuais para:
+- HEALTHY;
+- WARNING;
+- CRITICAL.
+
+## Trade-off
+
+Não foram criados componentes genéricos como tabela ou cards reutilizáveis.
+
+Essas abstrações seriam úteis em uma aplicação maior, mas seriam excesso de engenharia para o escopo atual.
+
+---
+
+# DECISION-006 — Proxy do Vite para desenvolvimento
+
+## Decisão
+
+Foi utilizado o proxy do Vite para comunicação com a API durante desenvolvimento.
+
+## Motivação
+
+- Evita alterar o backend apenas para resolver CORS local.
+- Mantém frontend e backend independentes.
+- Simula um cenário próximo de produção com gateway/reverse proxy.
+
+## Trade-off
+
+Em produção, a estratégia dependerá da infraestrutura. Caso frontend e backend estejam em domínios diferentes, será necessário configurar CORS ou utilizar um gateway.
+
+---
+
+# DECISION-007 — Estados visuais da aplicação
+
+## Decisão
+
+Foram tratados estados de:
 
 - carregamento;
 - erro;
 - ausência de dados;
-- situação crítica.
+- vendedores críticos.
 
-### Motivações
+## Motivação
 
-Uma aplicação administrativa precisa comunicar claramente o estado atual do sistema.
+Aplicações administrativas precisam comunicar claramente problemas e estados atuais.
 
-Além disso, o alerta de vendedores críticos atende ao requisito AC-06, evitando que o usuário precise analisar toda a tabela para identificar problemas.
+O alerta de vendedores críticos atende ao requisito AC-06, permitindo identificar riscos sem abrir a lista.
 
-### Trade-off
+## Trade-off
 
-Poderíamos adicionar componentes mais elaborados como skeletons, gráficos e animações. Porém, para um take-home, feedbacks simples possuem melhor relação custo/benefício.
+Não foram adicionados gráficos, animações ou dashboards analíticos por não serem necessários para o escopo do desafio.
+
+---
+
+# Fragilidades conhecidas
+
+## 1. Suporte a múltiplas competências
+
+Atualmente o frontend utiliza a primeira competência retornada pela API.
+
+Em produção seria necessário implementar:
+
+- seleção de competência;
+- filtros;
+- definição da competência ativa.
+
+---
+
+## 2. Ausência de testes automatizados
+
+Não foram implementados testes de frontend devido ao timebox.
+
+Com mais tempo seriam adicionados testes para:
+
+- hooks;
+- estados de erro/loading;
+- renderização de vendedores críticos.
+
+---
+
+## 3. Configuração de ambiente simplificada
+
+A URL da API deveria utilizar variáveis de ambiente (`VITE_API_URL`) para suportar diferentes ambientes.
+
+---
+
+# Uso de IA
+
+A IA foi utilizada como apoio para:
+
+- discussão de arquitetura;
+- validação de decisões;
+- aceleração de implementação.
+
+As sugestões foram revisadas e adaptadas durante o desenvolvimento.
+
+Um exemplo foi a utilização inicial de versões muito recentes das dependências, que causaram incompatibilidades de tipagem entre TypeScript e Material UI.
+
+A solução foi ajustar as versões para uma combinação mais estável, priorizando previsibilidade e compatibilidade.
